@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>우리카페 메뉴판</title>
+<style>
+  /* ===== 꾸미기 설정 ===== */
+  /* 색을 바꾸고 싶으면 아래 색 코드(#으로 시작하는 글자)를 고치세요 */
+  :root {
+    --배경색1: #ffd9c7;
+    --배경색2: #c9d9ff;
+    --포인트색: #e0714b;
+    --글자색: #3a2e2a;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: "Gowun Dodum", "고운 돋움", "Malgun Gothic", "맑은 고딕", sans-serif;
+    color: var(--글자색);
+    min-height: 100vh;
+    background: linear-gradient(160deg, var(--배경색1), var(--배경색2));
+    background-attachment: fixed;
+    display: flex;
+    justify-content: center;
+  }
+
+  .화면 {
+    width: 100%;
+    max-width: 390px;
+    padding: 28px 18px 40px;
+  }
+
+  /* 맨 위 가게 이름 */
+  header { text-align: center; margin-bottom: 22px; }
+  header h1 { font-size: 30px; letter-spacing: 1px; }
+  header p { margin-top: 8px; font-size: 15px; opacity: 0.8; }
+
+  /* 유리 느낌 공통 스타일 (반투명 + 그림자 + 둥근 모서리) */
+  .유리 {
+    background: rgba(255, 255, 255, 0.45);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    box-shadow: 0 8px 24px rgba(80, 60, 50, 0.12);
+    border-radius: 20px;
+  }
+
+  /* 종류 버튼 */
+  .종류버튼줄 { display: flex; gap: 8px; margin-bottom: 18px; }
+  .종류버튼 {
+    flex: 1;
+    padding: 12px 0;
+    font-family: inherit;
+    font-size: 16px;
+    color: var(--글자색);
+    cursor: pointer;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.35);
+    box-shadow: 0 4px 12px rgba(80, 60, 50, 0.08);
+  }
+  .종류버튼.선택됨 {
+    background: var(--포인트색);
+    color: #fff;
+    border-color: transparent;
+  }
+
+  /* 메뉴 카드 */
+  .메뉴카드 {
+    padding: 16px 18px;
+    margin-bottom: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+  .메뉴카드 .이름 { font-size: 18px; font-weight: bold; }
+  .메뉴카드 .설명 { font-size: 14px; opacity: 0.75; margin-top: 4px; }
+  .메뉴카드 .가격 { font-size: 17px; color: var(--포인트색); font-weight: bold; white-space: nowrap; }
+
+  /* 맨 아래 안내 */
+  footer { padding: 16px 18px; text-align: center; font-size: 14px; line-height: 1.7; margin-top: 24px; }
+</style>
+</head>
+<body>
+<div class="화면">
+
+  <header>
+    <!-- 가게 이름과 인사말은 여기서 고치세요 -->
+    <h1>우리카페</h1>
+    <p>오늘도 찾아주셔서 고맙습니다 ☕</p>
+  </header>
+
+  <!-- 종류 버튼은 자바스크립트가 자동으로 만들어요 -->
+  <div class="종류버튼줄" id="종류버튼줄"></div>
+
+  <!-- 메뉴 카드도 자동으로 만들어져요 -->
+  <main id="메뉴목록"></main>
+
+  <footer class="유리">
+    <!-- 영업시간과 안내 문구는 여기서 고치세요 -->
+    영업시간 · 매일 오전 9시 ~ 오후 9시<br>
+    주문은 카운터에서 도와드릴게요 😊
+  </footer>
+
+</div>
+
+<script>
+  /* ===== 메뉴 고치는 곳 ===== */
+  /* 아래 목록에서 이름, 설명, 가격을 마음대로 고치세요.
+     - 메뉴를 늘리려면 { 이름: "...", 설명: "...", 가격: 0 }, 한 줄을 복사해서 붙이세요.
+     - 가격은 숫자만 쓰세요 (예: 4500). 쉼표는 자동으로 붙어요.
+     - 줄 끝의 쉼표(,)와 따옴표(")는 지우지 마세요. */
+  const 메뉴 = {
+    "커피": [
+      { 이름: "아메리카노", 설명: "깔끔하고 진한 기본 커피", 가격: 4000 },
+      { 이름: "카페라떼", 설명: "부드러운 우유가 듬뿍", 가격: 4500 },
+    ],
+    "음료": [
+      { 이름: "딸기 에이드", 설명: "상큼한 딸기와 탄산", 가격: 5000 },
+      { 이름: "유자차", 설명: "따뜻하게 마시는 달콤한 차", 가격: 4500 },
+    ],
+    "디저트": [
+      { 이름: "치즈케이크", 설명: "꾸덕하고 진한 치즈 맛", 가격: 6000 },
+      { 이름: "크로플", 설명: "바삭한 크루아상 와플", 가격: 5500 },
+    ],
+  };
+
+  /* ===== 여기부터는 화면을 그리는 부분이에요. 몰라도 괜찮아요! ===== */
+  const 버튼줄 = document.getElementById("종류버튼줄");
+  const 목록 = document.getElementById("메뉴목록");
+
+  function 메뉴보여주기(종류) {
+    목록.innerHTML = "";
+    메뉴[종류].forEach(function (항목) {
+      const 카드 = document.createElement("div");
+      카드.className = "메뉴카드 유리";
+      카드.innerHTML =
+        '<div><div class="이름"></div><div class="설명"></div></div>' +
+        '<div class="가격"></div>';
+      카드.querySelector(".이름").textContent = 항목.이름;
+      카드.querySelector(".설명").textContent = 항목.설명;
+      카드.querySelector(".가격").textContent = 항목.가격.toLocaleString("ko-KR") + "원";
+      목록.appendChild(카드);
+    });
+    document.querySelectorAll(".종류버튼").forEach(function (버튼) {
+      버튼.classList.toggle("선택됨", 버튼.textContent === 종류);
+    });
+  }
+
+  Object.keys(메뉴).forEach(function (종류) {
+    const 버튼 = document.createElement("button");
+    버튼.className = "종류버튼";
+    버튼.textContent = 종류;
+    버튼.addEventListener("click", function () { 메뉴보여주기(종류); });
+    버튼줄.appendChild(버튼);
+  });
+
+  메뉴보여주기(Object.keys(메뉴)[0]);
+</script>
+</body>
+</html>
